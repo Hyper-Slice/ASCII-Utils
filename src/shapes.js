@@ -1,8 +1,7 @@
-
 import { valueArrayToAscii } from "./convert.js";
 
 // generic function iterator for math functions 
-export function genValues(planeSize=200,clamp,callback,options){
+export function genValues(planeSize=200,clamp,callback,options={}){
     const values=[];// the plane rotated is by 90 degrees so the x axis becomes y etc
     const planeStride=planeSize/2;
 
@@ -194,3 +193,32 @@ export function genCubic(options={}){
 }
 
 //shape generators, returns line array of converted ascii(FUTURE!  cubes,circle,triangle,square)
+
+export function genRectangle(options={}){
+    const {
+        width=10,//inner size without border 
+        length=5,
+        borderChar="*",//single char 
+        fillChar=' ',// single char only
+    }=options;
+
+    let rows=[];
+    
+    for (let row = 0; row < length+2 ; row++) {
+        let line='';
+        for (let column = 0; column < width+2; column++) {
+            if((column==0||row==0)||(column==width+1||row==length+1)){
+                line+=borderChar
+            }
+            else{
+                line+=fillChar;
+            }
+        }
+        rows.push(line);
+    }
+
+    return rows
+}
+
+console.log(genRectangle().join('\n'));
+
