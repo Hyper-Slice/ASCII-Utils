@@ -1,3 +1,4 @@
+//takes a img html element and a  canvas element to extract img data and turn it into ascii
 export function imageToAscii(img,canvas,options= {}){
 
     const {
@@ -63,7 +64,8 @@ export function imageToAscii(img,canvas,options= {}){
     }
     return pixelArray.join('');
 }
-
+// takes a list of values can be negative or positive then renders them in ascii in a array of lines
+//NOTE! yoffset is added if values are negative so the smallest number will always be the at line index 0 
 export function valueArrayToAscii(lengths,priChar='*',secChar='-',primaryDelimAmount=1){
     let yOffset=0;
     let maxVal=0;

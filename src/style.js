@@ -1,3 +1,5 @@
+//wraps substrings starting and ending with a delimiter in a html tag of choice 
+//NOTE! not sanitization and only wraps the first group found ( might add more groups later using index arrays)
 export function delimStringHTMLTagWrapper(string,delim,tag,cssParam,cssParamValue){
     let startInsertIndex=0;
     let endInsertIndex=0;

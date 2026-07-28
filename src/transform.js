@@ -15,18 +15,14 @@ export function reverseString(string,delim=''){
     return Array.from(string).reverse().join(delim);
 }
 
-//NOTE! ai generated will rewrite later and move to render
-export function replaceStartAsterisk(lines, size, MainChar) {
-    if (!Array.isArray(lines) || lines.length === 0) return [];
+//Rewrote no AI yay i keep my job :)
+export function replaceStringStart(lines,priChar=' ',indexChar='*',stopBefore=0) {
 
     return lines.map((currentLine) => {
-        const CharIndex = currentLine.indexOf(MainChar);
-        if (CharIndex === -1) return currentLine;
-        
-        const spaceCount = Math.max(0, CharIndex - size);
-        const spaces = ' '.repeat(spaceCount);
-        const remainingLine = currentLine.slice(spaceCount);
-        
-        return spaces + remainingLine;
+        let charIndex=currentLine.indexOf(indexChar);
+        charIndex-=stopBefore;
+
+        if(charIndex<0){return currentLine}
+        return priChar.repeat(charIndex)+currentLine.slice(charIndex,currentLine.length);
     });
 }

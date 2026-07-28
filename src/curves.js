@@ -4,7 +4,7 @@ export function parabolaValues(options={}){
         a=-0.3,
         b=0,
         c=0,
-        planeSize=20,
+        planeSize=20,// total plane size for negative half to positive half with 0 included 
     } = options
 
     const values=[];// the plane rotated is by 90 degrees so the x axis becomes y etc
@@ -17,13 +17,13 @@ export function parabolaValues(options={}){
     }
     return(values);
 }
-
+//sine function returns array of values for each y point 
 export function sinValues(options={}){
     const {
         a: frequency=0.1,// between 0 and 1 might scale using sigmoid 
         b: amplitude=10,
         c: offset=8,
-        planeSize=200,
+        planeSize=200,// total plane size for negative half to positive half with 0 included 
     } = options
 
     const values=[];// the plane rotated is by 90 degrees so the x axis becomes y etc
