@@ -64,7 +64,7 @@ export function imageToAscii(img,canvas,options= {}){
     }
     return pixelArray.join('');
 }
-// takes a list of values can be negative or positive then renders them in ascii in a array of lines
+// takes a list of values can be negative or positive then renders them in ascii in a array of lines (FUTURE! points{x,y} might make this work by taking in a value list and placing chars at the points in the output instead of doing max value then just building from that)
 //NOTE! yoffset is added if values are negative so the smallest number will always be the at line index 0 
 export function valueArrayToAscii(lengths,priChar='*',secChar='-',primaryDelimAmount=1){
     let yOffset=0;

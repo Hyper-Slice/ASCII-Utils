@@ -1,6 +1,7 @@
 import { valueArrayToAscii } from "./convert.js";
 
 // generic function iterator for math functions 
+//FUTURE! change to points{x,y} array instead of value array 
 export function genValues(planeSize=200,clamp,callback,options={}){
     const values=[];// the plane rotated is by 90 degrees so the x axis becomes y etc
     const planeStride=planeSize/2;
@@ -11,7 +12,7 @@ export function genValues(planeSize=200,clamp,callback,options={}){
     }
     return(values);
 }
-
+//FUTURE! change to output points{x,y}
 //math functions
 export function sin(x,options={}){
     const {
@@ -77,7 +78,7 @@ export function cubic(x,options={}){
     }=options;
     return (a*x**3)+(b*x**2)+(c*x)+d;
 }
-
+//FUTURE! change to work with  points{x,y}
 // function generators, returns line array of converted ascii
 export function genSin(options={}){
     const {
@@ -192,7 +193,7 @@ export function genCubic(options={}){
     return valueArrayToAscii(genValues(planeSize,clamp,cubic,options),priChar,secChar,primaryDelimAmount);
 }
 
-//shape generators, returns line array of converted ascii(FUTURE!  cubes,circle,triangle,square)
+//shape generators, returns line array of converted ascii(FUTURE! change to output points{x,y} not actual strings)(FUTURE!  cubes,circle,triangle,square)
 
 export function genRectangle(options={}){
     const {
@@ -220,5 +221,4 @@ export function genRectangle(options={}){
     return rows
 }
 
-console.log(genRectangle().join('\n'));
 
