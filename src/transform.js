@@ -1,3 +1,5 @@
+
+//ascii transforms
 export function transposeStringArray(array){
     let invArray=[];
     for (let x = 0; x < array[0].length; x++) {
@@ -25,4 +27,14 @@ export function replaceStringStart(lines,priChar=' ',indexChar='*',stopBefore=0)
         if(charIndex<0){return currentLine}
         return priChar.repeat(charIndex)+currentLine.slice(charIndex,currentLine.length);
     });
+}
+// point transforms
+export function transposePoints(points){
+    for (let index = 0; index < points.length; index++) {
+        const point = points[index];
+        let temp=point[0];
+        point[0]=point[1];
+        point[1]=temp;
+    }
+    return points
 }

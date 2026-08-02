@@ -1,73 +1,93 @@
-import { valueArrayToAscii } from "./convert.js";
+import { PointsToAscii } from "./convert.js";
+import { transposePoints } from "./transform.js";
 
 // generic function iterator for math functions 
 //FUTURE! change to points{x,y} array instead of value array 
-export function genValues(planeSize=200,clamp,callback,options={}){
-    const values=[];// the plane rotated is by 90 degrees so the x axis becomes y etc
+export function genPoints(planeSize=200,callback,options={}){
+    const points=[];// the plane rotated is by 90 degrees so the x axis becomes y etc
     const planeStride=planeSize/2;
-
+    
     //generate graph values
     for (let x = (-1*planeStride); x <= planeStride; x++) {
-        values.push(Math.min(Math.max(callback(x,options),clamp*-1),clamp));
+        const point=callback(x,options);
+        if(Array.isArray(point[0])){
+            points.push(...point);
+        }
+        else{
+            points.push(point);
+        }
     }
-    return(values);
+    return(points);
 }
-//FUTURE! change to output points{x,y}
 //math functions
 export function sin(x,options={}){
     const {
         frequency=0.1,
         amplitude=10,
         offset=0,
+        clamp=50,
     }=options;
-    return Math.sin(x*frequency)*amplitude+offset;
+    const mathFunction=Math.sin(x*frequency)*amplitude+offset
+    return [x , Math.min(clamp,Math.max(mathFunction,clamp))];
 }
 export function cos(x,options={}){
     const {
         frequency=0.1,
         amplitude=10,
         offset=0,
+        clamp=50,
     }=options;
-    return Math.cos(x*frequency)*amplitude+offset;
+    const mathFunction=Math.cos(x*frequency)*amplitude+offset;
+    return [x , Math.min(clamp,Math.max(mathFunction,clamp))];
 }
 export function tan(x,options={}){
     const {
         frequency=0.1,
         amplitude=10,
         offset=0,
+        clamp=50,
     }=options;
-    return Math.tan(x*frequency)*amplitude+offset;
+    const mathFunction=Math.tan(x*frequency)*amplitude+offset;
+    return [x , Math.min(clamp,Math.max(mathFunction,clamp))];
 }
 export function parabola(x,options={}){
     const {
-        a=0.1,
+        a=0.3,
         b=0,
         c=0,
+        clamp=50,
     }=options;
-    return a*x**2+b*x+c;
+    const mathFunction=a*x**2+b*x+c;
+    return [x,Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
 export function line(x,options={}){
     const {
         slope=0,
         offset=0,
+        clamp=50
     }=options;
-    return slope*x+offset;
+    const mathFunction=slope*x+offset;
+    return [x , Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
 export function hyperbola(x,options={}){
     const {
         a=1,
         b=1,
         c=0,
+        clamp=50,
     }=options;
-    return (a/(b*x))+c;
+    const mathFunction=(a/(b*x))+c;
+    return [x , Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
 export function exponential(x,options={}){
     const {
         a=1,
         b=1,
         c=0,
+        clamp=50,
     }=options;
-    return (a*b**x)+c;
+    const mathFunction=(a*b**x)+c;
+    return [x , Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
 export function cubic(x,options={}){
     const {
@@ -75,150 +95,21 @@ export function cubic(x,options={}){
         b=1,
         c=1,
         d=0,
+        clamp=50,
     }=options;
-    return (a*x**3)+(b*x**2)+(c*x)+d;
+    const mathFunction=(a*x**3)+(b*x**2)+(c*x)+d;
+    return [x , Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
-//FUTURE! change to work with  points{x,y}
-// function generators, returns line array of converted ascii
-export function genSin(options={}){
+export function circle(x,options={}){
     const {
-        priChar='*',
-        secChar='-',
-        primaryDelimAmount=1,
-        planeSize=200,
-        clamp=100,
-        frequency=0.1,
-        amplitude=10,
-        offset=0,
+        r=10,
+        clamp=50,
     }=options;
-
-    return valueArrayToAscii(genValues(planeSize,clamp,sin,options),priChar,secChar,primaryDelimAmount);
-}
-export function genCos(options={}){
-    const {
-        priChar='*',
-        secChar='-',
-        primaryDelimAmount=1,
-        planeSize=200,
-        clamp=100,
-        frequency=0.1,
-        amplitude=10,
-        offset=0,
-    }=options;
-
-    return valueArrayToAscii(genValues(planeSize,clamp,cos,options),priChar,secChar,primaryDelimAmount);
-}
-export function genTan(options={}){
-    const {
-        priChar='*',
-        secChar='-',
-        primaryDelimAmount=1,
-        planeSize=200,
-        clamp=100,
-        frequency=0.1,
-        amplitude=10,
-        offset=0,
-    }=options;
-
-    return valueArrayToAscii(genValues(planeSize,clamp,tan,options),priChar,secChar,primaryDelimAmount);
-}
-export function genParabola(options={}){
-    const {
-        priChar='*',
-        secChar='-',
-        primaryDelimAmount=1,
-        planeSize=200,
-        clamp=100,
-        a=0.1,
-        b=0,
-        c=0,
-    }=options;
-
-    return valueArrayToAscii(genValues(planeSize,clamp,parabola,options),priChar,secChar,primaryDelimAmount);
-}
-export function genLine(options={}){
-    const {
-        priChar='*',
-        secChar='-',
-        primaryDelimAmount=1,
-        planeSize=200,
-        clamp=100,
-        slope=0,
-        offset=0,
-    }=options;
-
-    return valueArrayToAscii(genValues(planeSize,clamp,line,options),priChar,secChar,primaryDelimAmount);
-}
-export function genHyperbola(options={}){
-    const {
-        priChar='*',
-        secChar='-',
-        primaryDelimAmount=1,
-        planeSize=200,
-        clamp=100,
-        a=1,
-        b=1,
-        c=0,
-    }=options;
-
-    return valueArrayToAscii(genValues(planeSize,clamp,hyperbola,options),priChar,secChar,primaryDelimAmount);
-}
-export function genExponential(options={}){
-    const {
-        priChar='*',
-        secChar='-',
-        primaryDelimAmount=1,
-        planeSize=200,
-        clamp=100,
-        a=1,
-        b=1,
-        c=0,
-    }=options;
-
-    return valueArrayToAscii(genValues(planeSize,clamp,exponential,options),priChar,secChar,primaryDelimAmount);
-}
-export function genCubic(options={}){
-    const {
-        priChar='*',
-        secChar='-',
-        primaryDelimAmount=1,
-        planeSize=200,
-        clamp=100,
-        a=1,
-        b=1,
-        c=1,
-        d=0,
-    }=options;
-
-    return valueArrayToAscii(genValues(planeSize,clamp,cubic,options),priChar,secChar,primaryDelimAmount);
+    const mathFunction=Math.sqrt(r**2-x**2)
+    const y=Math.min(clamp,Math.max(mathFunction,-clamp))
+    if (Math.abs(x) > r) return [];
+    return [[x,y],[x,-y]];
 }
 
-//shape generators, returns line array of converted ascii(FUTURE! change to output points{x,y} not actual strings)(FUTURE!  cubes,circle,triangle,square)
-
-export function genRectangle(options={}){
-    const {
-        width=10,//inner size without border 
-        length=5,
-        borderChar="*",//single char 
-        fillChar=' ',// single char only
-    }=options;
-
-    let rows=[];
-    
-    for (let row = 0; row < length+2 ; row++) {
-        let line='';
-        for (let column = 0; column < width+2; column++) {
-            if((column==0||row==0)||(column==width+1||row==length+1)){
-                line+=borderChar
-            }
-            else{
-                line+=fillChar;
-            }
-        }
-        rows.push(line);
-    }
-
-    return rows
-}
 
 

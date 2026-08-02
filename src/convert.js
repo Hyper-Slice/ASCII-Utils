@@ -64,30 +64,50 @@ export function imageToAscii(img,canvas,options= {}){
     }
     return pixelArray.join('');
 }
-// takes a list of values can be negative or positive then renders them in ascii in a array of lines (FUTURE! points{x,y} might make this work by taking in a value list and placing chars at the points in the output instead of doing max value then just building from that)
-//NOTE! yoffset is added if values are negative so the smallest number will always be the at line index 0 
-export function valueArrayToAscii(lengths,priChar='*',secChar='-',primaryDelimAmount=1){
-    let yOffset=0;
-    let maxVal=0;
-    let rows=[];
-    // finding yoffset value when x and if x value goes negative 
-    for (let index = 0; index < lengths.length; index++) {
-        const number = lengths[index];
-        const absNumber=Math.abs(Math.round(number));
-        if(absNumber>yOffset&&number<0){
-            yOffset=absNumber;
-        }
-        if(absNumber>=maxVal){
-            maxVal=absNumber;
-        }
-    }
-    for (let index = 0; index < lengths.length; index++) {
-        const element = lengths[index];
+//takes a list of points and plots them NOTE! negative values will be pushed so that all values are positive by taking the smallest values absolute and adding it to all the points for x and y
+export function PointsToAscii(points,priChar='*',secChar='-'){
+  let yOffset=0;
+  let xOffset=0;
 
-            rows.push(secChar.repeat(element+yOffset+1)+priChar.repeat(primaryDelimAmount));
+  let yMax=0;
+  let xMax=0;
+  // getting plane size and x and y offsets to push all numbers into the positive plane
+  for (let index = 0; index < points.length; index++) {
+    const point = points[index];
+    let x=Math.round(point[0]);
+    let y=Math.round(point[1]);
+    if(x<xOffset){
+        xOffset=x;
     }
-            
-    return rows.map(element=>{
-            return element+priChar.repeat(Math.abs(maxVal+yOffset-element.length+2));
-    })
+    if(y<yOffset){
+        yOffset=y;
+    }
+    if(x>xMax){
+        xMax=x;
+    }
+    if(y>yMax){
+        yMax=y;
+    }
+    points[index]=[x,y];
+  }
+  yOffset=Math.abs(yOffset);
+  xOffset=Math.abs(xOffset);
+  yMax=yMax+yOffset+1;
+  xMax=xMax+xOffset+1;
+  console.log(yOffset,xOffset,yMax,xMax);
+  let plane=[]
+  for (let i = 0; i < yMax; i++) {
+  plane.push(new Array(xMax).fill(secChar));
+}
+for (let i = 0; i < points.length; i++) {
+    const point = points[i];
+    let x=xMax-point[0]+xOffset;
+    let y=yMax-point[1]+yOffset;
+    if(isNaN(x)||isNaN(y)){
+        continue;
+    }
+    else{plane[y][x]=priChar;}
+    
+}
+    return plane.map(row => row.join('')).join('\n');
 }
