@@ -4,8 +4,8 @@ import { PointsToAscii } from "./convert.js";
 // FIX! fix no return callback instead of current implementation 
 export function genPoints(callback,options={}){
     const {
-        planeSize=20,
-        stepSize=0.1,
+        planeSize=50,
+        stepSize=1,
     }=options;
     const points=[];// the plane rotated is by 90 degrees so the x axis becomes y etc
     const planeStride=planeSize/2;
@@ -33,7 +33,7 @@ export function sin(x,options={}){
         clamp=50,
     }=options;
     const mathFunction=Math.sin(x*frequency)*amplitude+offset
-    return [x , Math.min(clamp,Math.max(mathFunction,clamp))];
+    return [x , Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
 export function cos(x,options={}){
     const {
@@ -43,7 +43,7 @@ export function cos(x,options={}){
         clamp=50,
     }=options;
     const mathFunction=Math.cos(x*frequency)*amplitude+offset;
-    return [x , Math.min(clamp,Math.max(mathFunction,clamp))];
+    return [x , Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
 export function tan(x,options={}){
     const {
@@ -53,7 +53,7 @@ export function tan(x,options={}){
         clamp=50,
     }=options;
     const mathFunction=Math.tan(x*frequency)*amplitude+offset;
-    return [x , Math.min(clamp,Math.max(mathFunction,clamp))];
+    return [x , Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
 export function parabola(x,options={}){
     const {
@@ -117,5 +117,5 @@ export function circle(x,options={}){
     return [[x,y],[x,-y]];
 }
 
-console.log(PointsToAscii(genPoints(circle)));
+console.log(PointsToAscii(genPoints(sin)));
 
