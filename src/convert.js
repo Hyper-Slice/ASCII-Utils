@@ -73,7 +73,7 @@ export function PointsToAscii(points,priChar='*',secChar='-'){
   let yMax=0;
   let xMax=0;
   // getting plane size and x and y offsets to push all numbers into the positive plane
-  console.log(points);
+  //console.log(points);
   for (let index = 0; index < points.length; index++) {
     const point = points[index];
     let x=Math.round(point[0]);
@@ -92,17 +92,17 @@ export function PointsToAscii(points,priChar='*',secChar='-'){
     }
     points[index]=[x,y];
   }
-  console.log(points);
+  //console.log(points);
   yOffset=Math.abs(yOffset);
   xOffset=Math.abs(xOffset);
   yMax=yMax+yOffset+1;
   xMax=xMax+xOffset+1;
-  console.log(yOffset,xOffset,yMax,xMax);
+  //console.log(yOffset,xOffset,yMax,xMax);
   let plane=[]
   for (let i = 0; i < yMax; i++) {
   plane.push(new Array(xMax).fill(secChar));
 }
-console.log(plane);
+//console.log(plane);
 for (let i = 0; i < points.length; i++) {
     const point = points[i];
     let x=point[0]+xOffset;
