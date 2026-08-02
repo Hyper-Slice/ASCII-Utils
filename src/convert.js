@@ -64,6 +64,7 @@ export function imageToAscii(img,canvas,options= {}){
     }
     return pixelArray.join('');
 }
+//FIX!! sometimes breaks on random values for no reason also fix render direction also split to sub functions for specific tasks
 //takes a list of points and plots them NOTE! negative values will be pushed so that all values are positive by taking the smallest values absolute and adding it to all the points for x and y
 export function PointsToAscii(points,priChar='*',secChar='-'){
   let yOffset=0;
@@ -72,6 +73,7 @@ export function PointsToAscii(points,priChar='*',secChar='-'){
   let yMax=0;
   let xMax=0;
   // getting plane size and x and y offsets to push all numbers into the positive plane
+  console.log(points);
   for (let index = 0; index < points.length; index++) {
     const point = points[index];
     let x=Math.round(point[0]);
@@ -90,6 +92,7 @@ export function PointsToAscii(points,priChar='*',secChar='-'){
     }
     points[index]=[x,y];
   }
+  console.log(points);
   yOffset=Math.abs(yOffset);
   xOffset=Math.abs(xOffset);
   yMax=yMax+yOffset+1;
@@ -99,10 +102,11 @@ export function PointsToAscii(points,priChar='*',secChar='-'){
   for (let i = 0; i < yMax; i++) {
   plane.push(new Array(xMax).fill(secChar));
 }
+console.log(plane);
 for (let i = 0; i < points.length; i++) {
     const point = points[i];
-    let x=xMax-point[0]+xOffset;
-    let y=yMax-point[1]+yOffset;
+    let x=point[0]+xOffset;
+    let y=point[1]+yOffset;
     if(isNaN(x)||isNaN(y)){
         continue;
     }

@@ -1,24 +1,29 @@
 import { PointsToAscii } from "./convert.js";
-import { transposePoints } from "./transform.js";
 
 // generic function iterator for math functions 
-//FUTURE! change to points{x,y} array instead of value array 
-export function genPoints(planeSize=200,callback,options={}){
+// FIX! fix no return callback instead of current implementation 
+export function genPoints(callback,options={}){
+    const {
+        planeSize=20,
+        stepSize=0.1,
+    }=options;
     const points=[];// the plane rotated is by 90 degrees so the x axis becomes y etc
     const planeStride=planeSize/2;
     
     //generate graph values
-    for (let x = (-1*planeStride); x <= planeStride; x++) {
+    for (let x = (-1*planeStride); x <= planeStride; x+=stepSize) {
         const point=callback(x,options);
         if(Array.isArray(point[0])){
             points.push(...point);
         }
-        else{
+        else if(Array.isArray(point)){
             points.push(point);
         }
     }
     return(points);
 }
+
+//FIX! no callback and clamped values so the do not generate rename clamp to cutoff
 //math functions
 export function sin(x,options={}){
     const {
@@ -100,6 +105,7 @@ export function cubic(x,options={}){
     const mathFunction=(a*x**3)+(b*x**2)+(c*x)+d;
     return [x , Math.min(clamp,Math.max(mathFunction,-clamp))];
 }
+// fix no point callback return method current implementation is iffy 
 export function circle(x,options={}){
     const {
         r=10,
@@ -111,5 +117,5 @@ export function circle(x,options={}){
     return [[x,y],[x,-y]];
 }
 
-
+console.log(PointsToAscii(genPoints(circle)));
 
