@@ -39,7 +39,7 @@ export function imageToAscii(img,canvas,options= {}){
 
         // canvas length and index and then add newline char
         // new line selection, skipped the boring nested for loops- 
-        // for(ehehe get it) a if approach for the challenge (remove pun?)
+        // for a if approach for the challenge (ehehe "for" get it)(remove pun?)
 
          if((i===lineLength)){
             pixelArray.push('\n');
@@ -68,10 +68,10 @@ export function imageToAscii(img,canvas,options= {}){
 //takes in a list of points outputs a viewport scaled version.
 export function PointsToAscii(points,options={}){
     const {
-        length=20,
-        width=40,
+        length=25,
+        width=50,
         primaryCharacter='*',
-        secondaryCharacter='-',
+        secondaryCharacter=' ',
     }=options;
 
     points=normalizePoints(points);
@@ -88,7 +88,6 @@ export function PointsToAscii(points,options={}){
     });
     return ViewPort.map(row => row.join('')).join('\n'); 
 }
-
 
 //finds the minimum x and y value as well as the maximum x and y value returns an array containing these values
 export function getBounds(points){

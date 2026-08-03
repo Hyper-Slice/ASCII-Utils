@@ -29,7 +29,7 @@ export function replaceStringStart(lines,priChar=' ',indexChar='*',stopBefore=0)
     });
 }
 // point transforms
-export function transposePoints(points){
+export function transposePoints2D(points){
     for (let index = 0; index < points.length; index++) {
         const point = points[index];
         let temp=point[0];
@@ -37,4 +37,15 @@ export function transposePoints(points){
         point[1]=temp;
     }
     return points
+}
+
+export function rotatePoints2D(points,angle){
+    const degrees=angle*(Math.PI/180)
+    return points.map(point=>{
+        const x=point[0];
+        const y=point[1];
+        const xRotated=(x*Math.cos(degrees))+(y*Math.sin(degrees));
+        const yRotated=((-1*x)*Math.sin(degrees))+(y*Math.cos(degrees));
+        return [xRotated,yRotated];
+        });
 }

@@ -34,7 +34,7 @@ export function genPoints(callback,options={}){
 //math functions
 export function sin(x,options={}){
     const {
-        frequency=0.1,
+        frequency=0.4,
         amplitude=10,
         offset=0,
         yAxisLength=30,
@@ -101,6 +101,16 @@ export function exponential(x,options={}){
     const mathFunction=(a*b**x)+c;
     return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
 }
+export function euler(x,options={}){
+    const {
+        a=1,
+        b=1,
+        c=0,
+        yAxisLength=30,
+    }=options;
+    const mathFunction=(a*Math.E**x)+c;
+    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+}
 export function cubic(x,options={}){
     const {
         a=1,
@@ -121,4 +131,3 @@ export function circle(x,options={}){
     const y=Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))
     return [[x,y],[x,-y]];
 }
-
