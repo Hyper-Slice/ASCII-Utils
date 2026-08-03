@@ -64,54 +64,81 @@ export function imageToAscii(img,canvas,options= {}){
     }
     return pixelArray.join('');
 }
-//FIX!! sometimes breaks on random values for no reason also fix render direction also split to sub functions for specific tasks
-//takes a list of points and plots them NOTE! negative values will be pushed so that all values are positive by taking the smallest values absolute and adding it to all the points for x and y
-export function PointsToAscii(points,priChar='*',secChar='-'){
-  let yOffset=0;
-  let xOffset=0;
 
-  let yMax=0;
-  let xMax=0;
-  // getting plane size and x and y offsets to push all numbers into the positive plane
-  console.log(points);
-  for (let index = 0; index < points.length; index++) {
-    const point = points[index];
-    let x=Math.round(point[0]);
-    let y=Math.round(point[1]);
-    if(x<xOffset){
-        xOffset=x;
+//takes in a list of points outputs a viewport scaled version.
+export function PointsToAscii(points,options={}){
+    const {
+        length=20,
+        width=40,
+        primaryCharacter='*',
+        secondaryCharacter='-',
+    }=options;
+
+    points=normalizePoints(points);
+
+    let ViewPort=[];
+
+    for (let i= 0; i < length; i++) {
+        ViewPort.push(new Array(width).fill(secondaryCharacter));
     }
-    if(y<yOffset){
-        yOffset=y;
-    }
-    if(x>xMax){
-        xMax=x;
-    }
-    if(y>yMax){
-        yMax=y;
-    }
-    points[index]=[x,y];
-  }
-  //console.log(points);
-  yOffset=Math.abs(yOffset);
-  xOffset=Math.abs(xOffset);
-  yMax=yMax+yOffset+1;
-  xMax=xMax+xOffset+1;
-  //console.log(yOffset,xOffset,yMax,xMax);
-  let plane=[]
-  for (let i = 0; i < yMax; i++) {
-  plane.push(new Array(xMax).fill(secChar));
+    points.forEach(point=>{
+        const x=Math.abs(Math.round(point[0]*(width-1)));
+        const y=Math.abs(Math.round(point[1]*(length-1)));
+        ViewPort[y][x]=primaryCharacter;
+    });
+    return ViewPort.map(row => row.join('')).join('\n'); 
 }
-console.log(plane);
-for (let i = 0; i < points.length; i++) {
-    const point = points[i];
-    let x=point[0]+xOffset;
-    let y=point[1]+yOffset;
-    if(isNaN(x)||isNaN(y)){
-        continue;
-    }
-    else{plane[y][x]=priChar;}
+
+
+//finds the minimum x and y value as well as the maximum x and y value returns an array containing these values
+export function getBounds(points){
+
+    let yMin=0;
+    let xMin=0;
+    let yMax=0;
+    let xMax=0;
+
+    points.forEach(point => {
+        let x=point[0];
+        let y=point[1];
+
+        if(x<xMin){xMin=x;}
+        if(y<yMin){yMin=y;}
+        if(x>xMax){xMax=x;}
+        if(y>yMax){yMax=y;}
     
+    });
+
+
+//       0    1    2    3
+return [xMax,xMin,yMax,yMin]
 }
-    return plane.map(row => row.join('')).join('\n');
+
+//goes trough a point list and pushes all points into the positive quadrant by adding the abs of the smallest x and y value to each point
+export function offsetPoints(points,bounds){
+
+    const [xMax,xMin,yMax,yMin]=bounds;
+
+    const xOffset=Math.abs(xMin);
+    const yOffset=Math.abs(yMin);
+
+    return points.map(point=>{
+        return [point[0]+xOffset,point[1]+yOffset];
+    });
+} 
+
+//converts points to a 0% to 100% scale 
+export function normalizePoints(points){
+
+    const bounds = getBounds(points);
+    let [xMax, xMin, yMax, yMin] = bounds;
+
+    points=offsetPoints(points,bounds);
+    xMax=xMax+Math.abs(xMin);
+    yMax=yMax+Math.abs(yMin);
+    return points.map(point=>{
+        const normalPointX = xMax === 0 ? 0 : point[0] / xMax;
+        const normalPointY = yMax === 0 ? 0 : point[1] / yMax;
+        return [normalPointX,normalPointY];
+    });
 }

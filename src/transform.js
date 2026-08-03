@@ -38,14 +38,3 @@ export function transposePoints(points){
     }
     return points
 }
-
-//FUTURE! implement a line connecting algorithm for points that are far apart
-/* notes:
-    (might just skip the connector lowkey and just fix the problem by changing step size but ill leave the idea here if need it )
-    basic concept for the line connector
-    find points next to each other on a edge probs via x stepping but need to consider if points are on 
-    the y direction too aka build a edge finder like no two lines connecting any pont pay cross so just
-     edge points work might use some circles for this 
-    then find delta in y or x create points that are stepped by one in the deltas till the two points are connected 
-    given x=1 and y=1 we step like this x+1 until x+1>=x delta also step in y till the same is true we just stop stepping in a direction of we reach the delta value 
-*/
