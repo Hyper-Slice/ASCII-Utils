@@ -1,29 +1,48 @@
-import { PointsToAscii } from "./convert.js";
+//imports
 import * as transform from "./transform.js";
+import * as convert from "./convert.js";
 
 
-export function genPoints(callback,options={}){
+//iterators
+// (FUTURE! might add a polar iterator)
+
+
+// takes a callback function that returns points for a input value for a set of numbers(cartesian)
+export function genPoints(options={}){
     const {
-        xAxisLength=30,
-        stepSize=1,
+        sampleFunction,// the function you want to sample 
+        rangeRestriction=rangeClip, // the function that restricts the sample function output 
+        xAxisLength=30,// the x axis value range, note that it goes from -half to +half
+        yAxisLength=30,//same for y
+        samplingResolution=1,// the size in which we step trough the x axis 
     }=options;
     const points=[];
-    const halfAxis=xAxisLength/2;
+    const halfXAxis=xAxisLength/2;
     
     //generate graph values
-    for (let x = (-1*halfAxis); x <= halfAxis; x+=stepSize) {
-        const output=callback(x,options);
+    for (let x = (-1*halfXAxis); x <= halfXAxis; x+=samplingResolution) {
+
+        let output=sampleFunction(x,options);
+        //multiple output points
         if(Array.isArray(output[0])){
 
-            for (let index = 0; index < output.length; index++) {
-                const point = output[index];
-                if(!point.flat(Infinity).some(isNaN)){
+            for(let index = 0; index < output.length; index++) {
+
+                let point = output[index];
+                point[1]=rangeRestriction(point[1],yAxisLength);
+                if (output.flat(Infinity).every(Number.isFinite)){
+
                     points.push(point);
+
                 }
             }
         }
+
         else{
-            if(!output.flat(Infinity).some(isNaN)){
+            // single output point
+            output[1]=rangeRestriction(output[1],yAxisLength);
+            if(output.flat(Infinity).every(Number.isFinite)){
+                
                 points.push(output);
             }
         }
@@ -31,103 +50,121 @@ export function genPoints(callback,options={}){
     return(points);
 }
 
-//math functions
+
+
+//range restriction strategies 
+
+function rangeClamp(value,threshold){
+    return Math.min(threshold,Math.max(value,-threshold));
+}
+
+function rangeClip(value,threshold){
+    return (value>threshold)||(value<-threshold)? +Infinity : value;
+}
+
+
+
+//math functions 
+
+//(cartesian)
 export function sin(x,options={}){
     const {
-        frequency=0.4,
-        amplitude=10,
+        freq=0.4,
+        amp=10,
         offset=0,
-        yAxisLength=30,
     }=options;
-    const mathFunction=Math.sin(x*frequency)*amplitude+offset
-    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=Math.sin(x*freq)*amp+offset
+    return [x,y];
 }
+
 export function cos(x,options={}){
     const {
-        frequency=0.1,
-        amplitude=10,
+        freq=0.1,
+        amp=10,
         offset=0,
-        yAxisLength=30,
     }=options;
-    const mathFunction=Math.cos(x*frequency)*amplitude+offset;
-    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=Math.cos(x*freq)*amp+offset;
+    return [x,y];
 }
+
 export function tan(x,options={}){
     const {
-        frequency=0.1,
-        amplitude=10,
+        freq=0.1,
+        amp=10,
         offset=0,
-        yAxisLength=30,
     }=options;
-    const mathFunction=Math.tan(x*frequency)*amplitude+offset;
-    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=Math.tan(x*freq)*amp+offset;
+    return [x,y];
 }
+
 export function parabola(x,options={}){
     const {
-        a=-0.3,
+        a=1,
         b=0,
         c=0,
-        yAxisLength=100,
     }=options;
-    const mathFunction=a*x**2+b*x+c;
-    return [x,Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=a*x**2+b*x+c;
+    return [x,y];
 }
+
 export function line(x,options={}){
     const {
-        slope=1,
-        offset=0,
-        yAxisLength=30
+        m=1,
+        c=0,
     }=options;
-    const mathFunction=slope*x+offset;
-    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=m*x+c;
+    return [x,y];
 }
+
 export function hyperbola(x,options={}){
     const {
         a=1,
         b=1,
         c=0,
-        yAxisLength=30,
     }=options;
-    const mathFunction=(a/(b*x))+c;
-    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=(a/(b*x))+c;
+    return [x,y];
 }
+
 export function exponential(x,options={}){
     const {
         a=1,
         b=1,
         c=0,
-        yAxisLength=30,
     }=options;
-    const mathFunction=(a*b**x)+c;
-    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=(a*b**x)+c;
+    return [x,y];
 }
+
 export function euler(x,options={}){
     const {
         a=1,
         b=1,
         c=0,
-        yAxisLength=30,
     }=options;
-    const mathFunction=(a*Math.E**x)+c;
-    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=(a*Math.E**x)+c;
+    return [x,y];
 }
+
 export function cubic(x,options={}){
     const {
         a=1,
         b=1,
         c=1,
         d=0,
-        yAxisLength=30,
     }=options;
-    const mathFunction=(a*x**3)+(b*x**2)+(c*x)+d;
-    return [x , Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))];
+    const y=(a*x**3)+(b*x**2)+(c*x)+d;
+    return [x,y];
 }
+
+
+//shape functions 
+
+//(cartesian)
 export function circle(x,options={}){
     const {
-        r=10,
-        yAxisLength=30,
+        r=1,
     }=options;
-    const mathFunction=Math.sqrt(r**2-x**2)
-    const y=Math.min(yAxisLength,Math.max(mathFunction,-yAxisLength))
+    const y=Math.sqrt(r**2-x**2)
     return [[x,y],[x,-y]];
 }
