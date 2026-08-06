@@ -66,6 +66,7 @@ function rangeClip(value,threshold){
 
 //math functions 
 
+
 //(cartesian)
 export function sin(x,options={}){
     const {
@@ -157,14 +158,19 @@ export function cubic(x,options={}){
     return [x,y];
 }
 
-
-//shape functions 
-
-//(cartesian)
 export function circle(x,options={}){
     const {
-        r=1,
+        r=10,
     }=options;
     const y=Math.sqrt(r**2-x**2)
     return [[x,y],[x,-y]];
 }
+
+//shape functions
+export function rectangle(options={}){
+    const {
+        height=10,
+        width=10,
+    }=options;
+}
+

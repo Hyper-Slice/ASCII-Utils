@@ -46,9 +46,12 @@ export function transposePoints2D(points){
     return points
 }
 
-//rotates points based on a angle given in degrees
+//rotates points based on a angle given in degrees(NOTE! rotating the points means that the viewport will autoscale the points to fit the rotated version)
+
 export function rotatePoints2D(points,angle){
-    const degrees=angle*(Math.PI/180)
+
+    const degrees=angle*(Math.PI/180);
+
     return points.map(point=>{
         const x=point[0];
         const y=point[1];
@@ -58,34 +61,33 @@ export function rotatePoints2D(points,angle){
         });
 }
 
-//goes trough a point list and pushes all points into the positive quadrant by adding the abs of the smallest x and y value to each point
-export function offsetPoints(points,bounds){
-
-    const [xMax,xMin,yMax,yMin]=bounds;
-
-    const xOffset=Math.abs(xMin);
-    const yOffset=Math.abs(yMin);
-
-    return points.map(point=>{
-        point[0]=point[0]+xOffset;
-        point[1]=point[1]+yOffset;
-        return point;
-    });
-} 
-
-//normalizes points to a 0-1 scale 
+//normalizes points to a 0-1 scale
 export function normalizePoints(points){
 
     const bounds = getBounds(points);
     let [xMax, xMin, yMax, yMin] = bounds;
+    
+    const xOffset=Math.abs(xMin);
+    const yOffset=Math.abs(yMin);
 
-    points=offsetPoints(points,bounds);
-    xMax=xMax+Math.abs(xMin);
-    yMax=yMax+Math.abs(yMin);
+    points=offsetPoints(points,xOffset,yOffset);
+
+    xMax=xMax+xOffset;
+    yMax=yMax+yOffset;
+
     return points.map(point=>{
         point[0] = xMax === 0 ? 0 : point[0] / xMax;
         point[1] = yMax === 0 ? 0 : point[1] / yMax;
         return point;
+    });
+}
+
+//moves a set of points by a offset
+export function offsetPoints(points,xOffset,yOffset){
+    return points.map(point=>{
+        point[0]+=xOffset;
+        point[1]+=yOffset;
+        return point
     });
 }
 
@@ -101,6 +103,48 @@ export function addDefaultPointData(points,pointData={}){
     });
 }
 
+
+
+//viewport transforms 
+
+
+export function rotateViewport(viewport,angle,defaultPointData={}){
+    const {
+         emptyPointData={
+            char:" ",
+        },
+    }=defaultPointData;
+
+
+    let newViewport = viewport.map(row => 
+    Array.from({ length: row.length }, () => ({ ...emptyPointData }))
+    );
+
+    const degrees=angle*(Math.PI/180);
+
+    let wPivot=(viewport[0].length-1)/2
+    let hPivot=(viewport.length-1)/2
+    for (let height = 0; height < viewport.length-1; height++) {
+        const row = viewport[height];  
+
+        for (let width = 0; width < row.length-1; width++) {
+            const point = row[width];
+
+            let rotatedWidth=((width-wPivot)*Math.cos(degrees))+((height-hPivot)*Math.sin(degrees));
+            let rotatedHeight=((-1*(width-wPivot))*Math.sin(degrees))+((height-hPivot)*Math.cos(degrees));
+            rotatedWidth=Math.round(rotatedWidth+wPivot);
+            rotatedHeight=Math.round(rotatedHeight+hPivot);
+            if(rotatedWidth>0&&rotatedHeight>0){
+
+                if(rotatedWidth<row.length&&rotatedHeight<viewport.length){
+                newViewport[rotatedHeight][rotatedWidth]=point;
+                }
+            }
+        }
+            
+    }
+    return newViewport;
+}
 //helper functions
 
 

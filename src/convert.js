@@ -45,7 +45,9 @@ export function viewportToString(viewport){
     return viewport.map(row=>
 
         row.map(point=>
+            
         point.char)
+
         .join('')
 
     )
