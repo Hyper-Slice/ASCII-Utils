@@ -1,27 +1,16 @@
 // convert  imgs source arrays to img ascii arrays
-/**
- * @param {HTMLImageElement} img a img element
- * @param {HTMLCanvasElement} canvas a canvas element
- * @param {Array} imgSources a list of the image source locations eg "\file.png"
- * @returns {array} a array containing the ascii strings of all the images
- */
-export async function convertImgToASCIIList(img,canvas,imgSources){
-    let AsciiImgArray=[];
+export async function imgListToPoints(img,canvas,imgSources){
+    let pointArray=[];
     for (let index = 0; index < imgSources.length; index++) {
-        const element = imgSources[index];
-        await loadImg(img,element);
-        let asciiImage=convertImgToASCII(img,canvas,{charPrimary:'#'});
-        AsciiImgArray.push(asciiImage); 
+        const source = imgSources[index];
+        await loadImg(img,source);
+        let points=imageToPoint(img,canvas);
+        pointArray.push(points); 
 }
-return AsciiImgArray;
+return pointArray;
 }
 
 // async img loading
-/**
- * @param {HTMLImageElement} img the actual img element
- * @param {String} imgSource the string location of the img
- * @returns the img but loaded use with async
- */
 export async function loadImg(img,imgSource) {
 
     return new Promise((resolve, reject) => {
@@ -32,16 +21,12 @@ export async function loadImg(img,imgSource) {
     });
 }
 
-//takes a img html element and a  canvas element to extract img data and turn it into ascii
-export function imageToAscii(img,canvas,options= {}){
+//takes a img html element and a  canvas element to extract img data and turn it into points with point
+export function imageToPoint(img,canvas,options= {}){
 
     const {
         widthFactor = 2,
         scaleFactor = 0.3,
-        charPrimary = '*',
-        charSecondary = '-',
-        charTertiary =' ',
-        brightnessThreshold = 480
     } = options;
 
     const canvasContext = canvas.getContext('2d');
@@ -57,44 +42,17 @@ export function imageToAscii(img,canvas,options= {}){
     const rawImageData= canvasContext.getImageData(0,0,canvas.width,canvas.height).data;
 
     //switched from a string to an array 
-    const pixelArray=[];
+    const points=[];
 
-    //setting vars
-    const halfBrightness=brightnessThreshold/2
-    let r,g,b;
-    let brightness;
-
-    //line count separation 
-    let lineLength=canvas.width*4;
-    const trueLength=lineLength;
     
-    
-    for(let i=0;i<rawImageData.length;i+=4){
-
-        // canvas length and index and then add newline char
-        // new line selection, skipped the boring nested for loops- 
-        // for a if approach for the challenge (ehehe "for" get it)(remove pun?)
-
-         if((i===lineLength)){
-            pixelArray.push('\n');
-           lineLength+=trueLength;
+    let rgba=[];
+    for (let y = 0; y < canvas.height; y++) {
+        let lineOffset=y * canvas.width * 4;
+        for(let x= 0; x<canvas.width;x+=4){  
+        rgba=[rawImageData[lineOffset+x],rawImageData[lineOffset+x+1],rawImageData[lineOffset+x+2],rawImageData[lineOffset+x+3]];
+        points.push([x/4,y,{rgba}]);
         }
-
-        // extracting the raw data in intervals of 4, skipping alpha value 
-        // getting a simple rgb brightness value
-        brightness=(rawImageData[i]+rawImageData[i+1]+rawImageData[i+2])
-
-        // adding the chars where brightness is above set value(detail is lost on purpose ) 
-        if (brightness>=brightnessThreshold){
-            pixelArray.push(charPrimary);
-        }
-        else if(brightness>=halfBrightness){
-            pixelArray.push(charSecondary)
-        }
-        else{
-            pixelArray.push(charTertiary);
-        }
-
     }
-    return pixelArray.join('');
+
+    return points;
 }
