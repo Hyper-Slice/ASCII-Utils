@@ -113,6 +113,7 @@ export function rotateViewport(viewport,angle,defaultPointData={}){
          emptyPointData={
             char:" ",
         },
+        
     }=defaultPointData;
 
 
@@ -124,6 +125,7 @@ export function rotateViewport(viewport,angle,defaultPointData={}){
 
     let wPivot=(viewport[0].length-1)/2
     let hPivot=(viewport.length-1)/2
+
     for (let height = 0; height < viewport.length-1; height++) {
         const row = viewport[height];  
 
@@ -132,6 +134,7 @@ export function rotateViewport(viewport,angle,defaultPointData={}){
 
             let rotatedWidth=((width-wPivot)*Math.cos(degrees))+((height-hPivot)*Math.sin(degrees));
             let rotatedHeight=((-1*(width-wPivot))*Math.sin(degrees))+((height-hPivot)*Math.cos(degrees));
+            
             rotatedWidth=Math.round(rotatedWidth+wPivot);
             rotatedHeight=Math.round(rotatedHeight+hPivot);
             if(rotatedWidth>0&&rotatedHeight>0){

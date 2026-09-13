@@ -19,7 +19,7 @@ export function pointsToViewport(points,options={}){
       
     }=options;
     //rotate the points so graphs display true due to text gong down all functions are flipped 
-    // (NOTE! do not rotate after normalization rotation can move values below 0)
+    points=rotatePoints2D(points,180);
     points=normalizePoints(points);
     points=addDefaultPointData(points,pointData);
     
@@ -32,6 +32,7 @@ let viewport = Array.from({ length: viewportHeight },() => Array.from({ length: 
         const x=Math.round(point[0]*(viewportWidth-1));
         const y=Math.round(point[1]*(viewportHeight-1));
         viewport[y][x]={...point[2]};
+        
     });
     return viewport; 
 }
