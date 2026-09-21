@@ -1,10 +1,14 @@
 // convert  imgs source arrays to img ascii arrays
-export async function imgListToPoints(img,canvas,imgSources){
+export async function imgListToPoints(options={}){
+    const {
+        imgSources=[],
+    }=options;
+
     let pointArray=[];
     for (let index = 0; index < imgSources.length; index++) {
         const source = imgSources[index];
         await loadImg(img,source);
-        let points=imageToPoint(img,canvas);
+        let points=imageToPoint(options);
         pointArray.push(points); 
 }
 return pointArray;
@@ -22,9 +26,11 @@ export async function loadImg(img,imgSource) {
 }
 
 //takes a img html element and a  canvas element to extract img data and turn it into points with point
-export function imageToPoint(img,canvas,options= {}){
+export function imageToPoint(options= {}){
 
     const {
+        img,
+        canvas,
         widthFactor = 2,
         scaleFactor = 0.3,
     } = options;
@@ -48,7 +54,7 @@ export function imageToPoint(img,canvas,options= {}){
     let rgba=[];
     for (let y = 0; y < canvas.height; y++) {
         let lineOffset=y * canvas.width * 4;
-        for(let x= 0; x<canvas.width;x+=4){  
+        for(let x= 0; x<canvas.width*4;x+=4){  
         rgba=[rawImageData[lineOffset+x],rawImageData[lineOffset+x+1],rawImageData[lineOffset+x+2],rawImageData[lineOffset+x+3]];
         points.push([x/4,y,{rgba}]);
         }

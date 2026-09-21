@@ -1,6 +1,7 @@
 //imports
-import { normalizePoints , addDefaultPointData, rotatePoints2D } from "./transform.js";
-
+import * as transform from "./transform.js";
+import * as images from  "./images.js";
+import * as shapes from "./shapes.js";
 
 //converters 
 
@@ -19,9 +20,9 @@ export function pointsToViewport(points,options={}){
       
     }=options;
     //rotate the points so graphs display true due to text gong down all functions are flipped 
-    points=rotatePoints2D(points,180);
-    points=normalizePoints(points);
-    points=addDefaultPointData(points,pointData);
+    points=transform.rotatePoints2D(points,180);
+    points=transform.normalizePoints(points);
+    points=transform.addDefaultPointData(points,pointData);
     
 
 // generate a 2d array filled with new objects 
@@ -53,4 +54,33 @@ export function viewportToString(viewport){
 
     )
     .join('\n');
+}
+
+
+export function viewportPipelineHelper(options={}){
+    const {
+        pointsAngle=0,
+        viewportAngle=0,
+        defaultPointData,
+        pointSource,
+    }=options;
+    let rawPoints;
+    if(typeof pointSource==="function"){
+        rawPoints=pointSource(options);
+    }else if(Array.isArray(pointSource)){
+        rawPoints=pointSource;
+    }
+    else{
+        rawPoints=shapes.genPoints(options);
+    }
+
+    return transform.rotateViewport(
+        convert.viewportToString(
+        convert.pointsToViewport(
+        transform.rotatePoints2D(rawPoints,pointsAngle)
+        ,options
+        )
+    ),
+        viewportAngle,
+        defaultPointData);
 }

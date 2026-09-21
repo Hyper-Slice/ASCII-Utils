@@ -69,6 +69,12 @@ export function normalizePoints(points){
     
     const xOffset=Math.abs(xMin);
     const yOffset=Math.abs(yMin);
+    if(xoffset>0){
+        xoffset=0;
+    }
+    if(yOffset>0){
+        yOffset=0;
+    }
 
     points=offsetPoints(points,xOffset,yOffset);
 

@@ -27,7 +27,7 @@ export function genPoints(options={}){
             for(let index = 0; index < output.length; index++) {
 
                 let point = output[index];
-                point[1]=rangeRestriction(point[1],Math.abs(yAxisBounds));
+                point[1]=rangeRestriction(point[1],Math.abs(yAxisBounds[0]));
                 if (output.flat(Infinity).every(Number.isFinite)){
 
                     points.push(point);
@@ -38,7 +38,7 @@ export function genPoints(options={}){
 
         else{
             // single output point
-            output[1]=rangeRestriction(output[1],Math.abs(yAxisBounds));
+            output[1]=rangeRestriction(output[1],Math.abs(yAxisBounds[0]));
             if(output.flat(Infinity).every(Number.isFinite)){
                 
                 points.push(output);
@@ -49,7 +49,11 @@ export function genPoints(options={}){
 }
 
 // takes a shape list and converts it to points
-export function genShape(shape,options={}){
+export function genShape(options={}){
+    const {
+        shape=triangle,
+        samplingResolution=1,
+    }=options;
     let points=[];
 
     shape.forEach(segment => {
@@ -62,16 +66,12 @@ export function genShape(shape,options={}){
           let yStart=Math.min(segment.origin[1],segment.endPoint[1]);
           let yEnd=Math.max(segment.origin[1],segment.endPoint[1]);
 
-          for (let y = yStart; y <= yEnd; y+=options.samplingResolution) {
+          for (let y = yStart; y <= yEnd; y+=samplingResolution) {
             points.push([[segment.origin[0],y]]);
           }
           
         }else{
-            const segmentPoints=genPoints({
-            ...segment,
-            ...options,
-            xAxisBounds:[Math.min(xStart,xEnd),
-                        Math.max(xStart,xEnd)]});
+            const segmentPoints=genPoints({...segment,...options,xAxisBounds:[Math.min(xStart,xEnd),Math.max(xStart,xEnd)]});
 
             if(xStart>xEnd){segmentPoints.reverse()};
 
@@ -98,18 +98,18 @@ export function addSegment(line={}){
 
 //range restrictions 
 
-function rangeClamp(value,threshold){
+export function rangeClamp(value,threshold){
     return Math.min(threshold[1],Math.max(value,threshold[0]));
 }
 
-function rangeClip(value,threshold){
+export function rangeClip(value,threshold){
     return (value>threshold[1])||(value<threshold[0])? +Infinity : value;
 }
 
 //shape lists (note Ai generated im to lazy to do all that)
 
 // Triangle
-const triangle = [
+export const triangle = [
     addSegment({ origin: [-6, -4], endPoint: [6, -4] }),
     addSegment({ origin: [6, -4], endPoint: [0, 6] }),
     addSegment({ origin: [0, 6], endPoint: [-6, -4] }),
@@ -117,7 +117,7 @@ const triangle = [
 
 
 // Rectangle
-const rectangle = [
+export const rectangle = [
     addSegment({ origin: [-7, -4], endPoint: [7, -4] }),
     addSegment({ origin: [7, -4], endPoint: [7, 4] }),
     addSegment({ origin: [7, 4], endPoint: [-7, 4] }),
@@ -126,7 +126,7 @@ const rectangle = [
 
 
 // Diamond
-const diamond = [
+export const diamond = [
     addSegment({ origin: [0, 7], endPoint: [6, 0] }),
     addSegment({ origin: [6, 0], endPoint: [0, -7] }),
     addSegment({ origin: [0, -7], endPoint: [-6, 0] }),
@@ -135,7 +135,7 @@ const diamond = [
 
 
 // House
-const house = [
+export const house = [
     // Outer house
     addSegment({ origin: [-7, -5], endPoint: [7, -5] }),
     addSegment({ origin: [7, -5], endPoint: [7, 2] }),
@@ -162,7 +162,7 @@ const house = [
 
 
 //cube 
-const cube = [
+export const cube = [
     // Front face
     addSegment({ origin: [-5, -5], endPoint: [5, -5] }),
     addSegment({ origin: [5, -5], endPoint: [5, 5] }),
@@ -184,7 +184,7 @@ const cube = [
 
 
 // Hexagon
-const hexagon = [
+export const hexagon = [
     addSegment({ origin: [-4, 7], endPoint: [4, 7] }),
     addSegment({ origin: [4, 7], endPoint: [8, 0] }),
     addSegment({ origin: [8, 0], endPoint: [4, -7] }),
@@ -195,7 +195,7 @@ const hexagon = [
 
 
 // Arrow
-const arrow = [
+export const arrow = [
     addSegment({ origin: [-8, 0], endPoint: [5, 0] }),
     addSegment({ origin: [5, 0], endPoint: [1, 4] }),
     addSegment({ origin: [5, 0], endPoint: [1, -4] }),
@@ -203,7 +203,7 @@ const arrow = [
 
 
 // Cross
-const cross = [
+export const cross = [
     addSegment({ origin: [-6, -2], endPoint: [-2, -2] }),
     addSegment({ origin: [-2, -2], endPoint: [-2, -6] }),
     addSegment({ origin: [-2, -6], endPoint: [2, -6] }),
@@ -220,7 +220,7 @@ const cross = [
 
 
 // Star
-const star = [
+export const star = [
     addSegment({ origin: [0, 8], endPoint: [2, 2] }),
     addSegment({ origin: [2, 2], endPoint: [8, 2] }),
     addSegment({ origin: [8, 2], endPoint: [3, -1] }),
@@ -336,4 +336,3 @@ export function circle(x,options={}){
     const y=Math.sqrt(r**2-x**2)
     return [[x,y],[x,-y]];
 }
-
