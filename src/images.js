@@ -27,12 +27,29 @@ export async function loadImg(img,imgSource) {
 
 //takes a img html element and a  canvas element to extract img data and turn it into points with point
 export function imageToPoint(options= {}){
-
+    
     const {
         img,
         canvas,
         widthFactor = 2,
         scaleFactor = 0.3,
+        charSelector=(rgba) => { // note ai generated seems to work 
+                                const [r, g, b, a = 1] = rgba;
+                                const alphaNormalized = a <= 1 ? a * 255 : a;
+                                const ramp = ' .:-=+*#%@';
+                                
+                                if (alphaNormalized < 128) {
+                                    return { rgba, char: ' ' };
+                                }
+                                
+                                const brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                                const charIndex = Math.floor((brightness / 255) * (ramp.length - 1));
+                                
+                                return {
+                                    rgba,
+                                    char: ramp[charIndex]
+                                };
+                                },
     } = options;
 
     const canvasContext = canvas.getContext('2d');
@@ -56,7 +73,8 @@ export function imageToPoint(options= {}){
         let lineOffset=y * canvas.width * 4;
         for(let x= 0; x<canvas.width*4;x+=4){  
         rgba=[rawImageData[lineOffset+x],rawImageData[lineOffset+x+1],rawImageData[lineOffset+x+2],rawImageData[lineOffset+x+3]];
-        points.push([x/4,y,{rgba}]);
+
+        points.push([x/4,y,charSelector(rgba)]);
         }
     }
 
