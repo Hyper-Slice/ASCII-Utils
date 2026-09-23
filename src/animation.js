@@ -1,7 +1,5 @@
 import * as convert from "./convert.js";
-import * as transform from "./transform.js";
-import * as images from  "./images.js";
-import * as shapes from "./shapes.js";
+
 
 
 export function captureAnimationFrames(options={}){
@@ -82,6 +80,40 @@ export class animation{
     }
 }
 
+export function loadJsonAnimation(JsonAnimation){
+    try {
+        return JSON.parse(JsonAnimation);
+    } catch (error) {
+        console.error("Load failed:[json to animation]:"+error);
+    }
+}
 
+export function animationToJson(animation){
+    try {
+    
+        return JSON.stringify(animation,null,2);
+    
+    } catch (error) {
+    
+        console.error("conversion failed:[animation to json]:"+error);
+    
+    }
 
+}
+
+export function loadJsonAnimationFile(JsonAnimation,filename="animation.json"){
+    
+    const json= loadJsonAnimation(JsonAnimation);
+    const blob= new Blob([json],{type:'application/json'});
+    const link=document.createElement('a');
+    
+    link.href= URL.createObjectURL(blob);
+    link.download = filename;
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.remove(link);
+    URL.revokeObjectURL(link.href);
+}
 
